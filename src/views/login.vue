@@ -22,7 +22,6 @@ const router = useRouter()
 const settingsStore = useSettingsStore()
 const userStore = useUserStore()
 
-const banner = new URL('../assets/images/login-banner.png', import.meta.url).href
 const logo = new URL('../assets/images/logo.png', import.meta.url).href
 const title = import.meta.env.VITE_APP_TITLE
 
@@ -71,35 +70,35 @@ function handleLogin() {
 }
 
 // 重置密码
-const resetFormRef = ref<FormInstance>()
-const resetForm = ref({
-  account: localStorage.username,
-  captcha: '',
-  newPassword: '',
-})
-const resetRules = ref<FormRules>({
-  account: [
-    { required: true, trigger: 'blur', message: '请输入用户名' },
-  ],
-  captcha: [
-    { required: true, trigger: 'blur', message: '请输入验证码' },
-  ],
-  newPassword: [
-    { required: true, trigger: 'blur', message: '请输入新密码' },
-    { min: 6, max: 18, trigger: 'blur', message: '密码长度为6到18位' },
-  ],
-})
-function handleReset() {
-  ElMessage({
-    message: '重置密码仅提供界面演示，无实际功能，需开发者自行扩展',
-    type: 'info',
-  })
-  resetFormRef.value && resetFormRef.value.validate((valid) => {
-    if (valid) {
-      // 这里编写业务代码
-    }
-  })
-}
+// const resetFormRef = ref<FormInstance>()
+// const resetForm = ref({
+//   account: localStorage.username,
+//   captcha: '',
+//   newPassword: '',
+// })
+// const resetRules = ref<FormRules>({
+//   account: [
+//     { required: true, trigger: 'blur', message: '请输入用户名' },
+//   ],
+//   captcha: [
+//     { required: true, trigger: 'blur', message: '请输入验证码' },
+//   ],
+//   newPassword: [
+//     { required: true, trigger: 'blur', message: '请输入新密码' },
+//     { min: 6, max: 18, trigger: 'blur', message: '密码长度为6到18位' },
+//   ],
+// })
+// function handleReset() {
+//   ElMessage({
+//     message: '重置密码仅提供界面演示，无实际功能，需开发者自行扩展',
+//     type: 'info',
+//   })
+//   resetFormRef.value && resetFormRef.value.validate((valid) => {
+//     if (valid) {
+//       // 这里编写业务代码
+//     }
+//   })
+// }
 </script>
 
 <template>
@@ -107,8 +106,8 @@ function handleReset() {
     <div class="bg-banner" />
     <div id="login-box">
       <div class="login-banner">
-        <img :src="logo" class="logo">
-        <img :src="banner" class="banner">
+        <!-- <img :src="logo" class="logo"> -->
+        <img :src="logo" class="banner">
       </div>
       <ElForm v-show="formType === 'login'" ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form">
         <div class="title-container">
@@ -117,13 +116,6 @@ function handleReset() {
           </h3>
         </div>
         <div>
-          <ElFormItem prop="host">
-            <ElInput v-model="loginForm.host" placeholder="主机地址" type="text" tabindex="1">
-              <template #prefix>
-                <SvgIcon name="ri:user-3-fill" />
-              </template>
-            </ElInput>
-          </ElFormItem>
           <ElFormItem prop="username">
             <ElInput v-model="loginForm.username" placeholder="用户名" type="text" tabindex="1">
               <template #prefix>
@@ -138,20 +130,27 @@ function handleReset() {
               </template>
             </ElInput>
           </ElFormItem>
+          <ElFormItem prop="host">
+            <ElInput v-model="loginForm.host" placeholder="主机地址" type="text" tabindex="3">
+              <template #prefix>
+                <SvgIcon name="clarity:host-solid" />
+              </template>
+            </ElInput>
+          </ElFormItem>
         </div>
         <div class="flex-bar">
           <ElCheckbox v-model="loginForm.remember">
             记住我
           </ElCheckbox>
-          <ElLink type="primary" :underline="false" @click="formType = 'reset'">
+          <!-- <ElLink type="primary" :underline="false" @click="formType = 'reset'">
             忘记密码了?
-          </ElLink>
+          </ElLink> -->
         </div>
         <ElButton :loading="loading" type="primary" size="large" style="width: 100%;" @click.prevent="handleLogin">
           登录
         </ElButton>
       </ElForm>
-      <ElForm v-show="formType === 'reset'" ref="resetFormRef" :model="resetForm" :rules="resetRules" class="login-form">
+      <!-- <ElForm v-show="formType === 'reset'" ref="resetFormRef" :model="resetForm" :rules="resetRules" class="login-form">
         <div class="title-container">
           <h3 class="title">
             忘记密码了? 🔒
@@ -191,7 +190,7 @@ function handleReset() {
             去登录
           </ElLink>
         </div>
-      </ElForm>
+      </ElForm> -->
     </div>
     <Copyright />
   </div>
