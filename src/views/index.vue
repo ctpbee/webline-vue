@@ -33,7 +33,8 @@ function open(url: string) {
       <HDropdownMenu
         :items="[
           [
-            { label: 'Github', handle: () => open('https://github.com/ctpbee/ctpbee') },
+            { label: 'ctpbee', handle: () => open('https://github.com/ctpbee/ctpbee') },
+            { label: 'webline', handle: () => open('https://github.com/ctpbee/webline') },
           ],
         ]"
       >

@@ -34,12 +34,13 @@ const redirect = ref(route.query.redirect?.toString() ?? settingsStore.settings.
 // 登录
 const loginFormRef = ref<FormInstance>()
 const loginForm = ref({
-  account: localStorage.login_account || '',
+  username: localStorage.username || '',
+  host: localStorage.host || '',
   password: '',
-  remember: !!localStorage.login_account,
+  remember: !!localStorage.username,
 })
 const loginRules = ref<FormRules>({
-  account: [
+  username: [
     { required: true, trigger: 'blur', message: '请输入用户名' },
   ],
   password: [
@@ -54,10 +55,12 @@ function handleLogin() {
       userStore.login(loginForm.value).then(() => {
         loading.value = false
         if (loginForm.value.remember) {
-          localStorage.setItem('login_account', loginForm.value.account)
+          localStorage.setItem('username', loginForm.value.username)
+          localStorage.setItem('host', loginForm.value.host)
         }
         else {
-          localStorage.removeItem('login_account')
+          localStorage.removeItem('username')
+          localStorage.removeItem('host')
         }
         router.push(redirect.value)
       }).catch(() => {
@@ -67,55 +70,10 @@ function handleLogin() {
   })
 }
 
-// 注册
-const registerFormRef = ref<FormInstance>()
-const registerForm = ref({
-  account: '',
-  captcha: '',
-  password: '',
-  checkPassword: '',
-})
-const registerRules = ref<FormRules>({
-  account: [
-    { required: true, trigger: 'blur', message: '请输入用户名' },
-  ],
-  captcha: [
-    { required: true, trigger: 'blur', message: '请输入验证码' },
-  ],
-  password: [
-    { required: true, trigger: 'blur', message: '请输入密码' },
-    { min: 6, max: 18, trigger: 'blur', message: '密码长度为6到18位' },
-  ],
-  checkPassword: [
-    { required: true, trigger: 'blur', message: '请再次输入密码' },
-    {
-      validator: (rule, value, callback) => {
-        if (value !== registerForm.value.password) {
-          callback(new Error('两次输入的密码不一致'))
-        }
-        else {
-          callback()
-        }
-      },
-    },
-  ],
-})
-function handleRegister() {
-  ElMessage({
-    message: '注册模块仅提供界面演示，无实际功能，需开发者自行扩展',
-    type: 'warning',
-  })
-  registerFormRef.value && registerFormRef.value.validate((valid) => {
-    if (valid) {
-      // 这里编写业务代码
-    }
-  })
-}
-
 // 重置密码
 const resetFormRef = ref<FormInstance>()
 const resetForm = ref({
-  account: localStorage.login_account,
+  account: localStorage.username,
   captcha: '',
   newPassword: '',
 })
@@ -142,12 +100,6 @@ function handleReset() {
     }
   })
 }
-
-function testAccount(account: string) {
-  loginForm.value.account = account
-  loginForm.value.password = '123456'
-  handleLogin()
-}
 </script>
 
 <template>
@@ -165,8 +117,15 @@ function testAccount(account: string) {
           </h3>
         </div>
         <div>
-          <ElFormItem prop="account">
-            <ElInput v-model="loginForm.account" placeholder="用户名" type="text" tabindex="1">
+          <ElFormItem prop="host">
+            <ElInput v-model="loginForm.host" placeholder="主机地址" type="text" tabindex="1">
+              <template #prefix>
+                <SvgIcon name="ri:user-3-fill" />
+              </template>
+            </ElInput>
+          </ElFormItem>
+          <ElFormItem prop="username">
+            <ElInput v-model="loginForm.username" placeholder="用户名" type="text" tabindex="1">
               <template #prefix>
                 <SvgIcon name="ri:user-3-fill" />
               </template>
@@ -191,70 +150,6 @@ function testAccount(account: string) {
         <ElButton :loading="loading" type="primary" size="large" style="width: 100%;" @click.prevent="handleLogin">
           登录
         </ElButton>
-        <div class="sub-link">
-          <span class="text">还没有帐号?</span>
-          <ElLink type="primary" :underline="false" @click="formType = 'register'">
-            创建新帐号
-          </ElLink>
-        </div>
-        <div style="margin-top: 20px; margin-bottom: -20px; text-align: center;">
-          <ElDivider>演示账号一键登录</ElDivider>
-          <ElButton type="primary" size="small" plain @click="testAccount('admin')">
-            admin
-          </ElButton>
-          <ElButton size="small" plain @click="testAccount('test')">
-            test
-          </ElButton>
-        </div>
-      </ElForm>
-      <ElForm v-show="formType === 'register'" ref="registerFormRef" :model="registerForm" :rules="registerRules" class="login-form" auto-complete="on">
-        <div class="title-container">
-          <h3 class="title">
-            探索从这里开始! 🚀
-          </h3>
-        </div>
-        <div>
-          <ElFormItem prop="account">
-            <ElInput v-model="registerForm.account" placeholder="用户名" tabindex="1">
-              <template #prefix>
-                <SvgIcon name="ri:user-3-fill" />
-              </template>
-            </ElInput>
-          </ElFormItem>
-          <ElFormItem prop="captcha">
-            <ElInput v-model="registerForm.captcha" placeholder="验证码" tabindex="2">
-              <template #prefix>
-                <SvgIcon name="ic:baseline-verified-user" />
-              </template>
-              <template #append>
-                <ElButton>发送验证码</ElButton>
-              </template>
-            </ElInput>
-          </ElFormItem>
-          <ElFormItem prop="password">
-            <ElInput v-model="registerForm.password" type="password" placeholder="密码" tabindex="3" show-password>
-              <template #prefix>
-                <SvgIcon name="ri:lock-2-fill" />
-              </template>
-            </ElInput>
-          </ElFormItem>
-          <ElFormItem prop="checkPassword">
-            <ElInput v-model="registerForm.checkPassword" type="password" placeholder="确认密码" tabindex="4" show-password>
-              <template #prefix>
-                <SvgIcon name="ri:lock-2-fill" />
-              </template>
-            </ElInput>
-          </ElFormItem>
-        </div>
-        <ElButton :loading="loading" type="primary" size="large" style="width: 100%; margin-top: 20px;" @click.prevent="handleRegister">
-          注册
-        </ElButton>
-        <div class="sub-link">
-          <span class="text">已经有帐号?</span>
-          <ElLink type="primary" :underline="false" @click="formType = 'login'">
-            去登录
-          </ElLink>
-        </div>
       </ElForm>
       <ElForm v-show="formType === 'reset'" ref="resetFormRef" :model="resetForm" :rules="resetRules" class="login-form">
         <div class="title-container">
