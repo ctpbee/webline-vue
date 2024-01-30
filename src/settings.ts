@@ -7,6 +7,13 @@ const globalSettings: Settings.all = {
   topbar: {
     mode: 'fixed',
   },
+  menu: {
+    subMenuUniqueOpened: false,
+    enableSubMenuCollapseButton: true,
+  },
+  toolbar: {
+    fullscreen: true,
+    pageReload: true,
+  },
 }
-
 export default defaultsDeep(globalSettings, settingsDefault) as RecursiveRequired<Settings.all>
