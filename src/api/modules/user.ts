@@ -6,8 +6,8 @@ export default {
     username: string
     password: string
     host: string
-  }) => api.post('/login', data, { }),
-
+  }) => api.post('web/login', data, { baseURL: data.host }),
+  logout: () => api.get('web/logout'),
   // 获取权限
   permission: () => api.get('user/permission', {
     baseURL: '/mock/',

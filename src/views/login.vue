@@ -7,7 +7,7 @@ meta:
 
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import Copyright from '@/layouts/components/Copyright/index.vue'
 import useSettingsStore from '@/store/modules/settings'
 import useUserStore from '@/store/modules/user'
@@ -38,6 +38,19 @@ const loginForm = ref({
   password: '',
   remember: !!localStorage.username,
 })
+function checkHost(rule: any, value: any, callback: any) {
+  if (value === '') {
+    callback(new Error('请输入host'))
+  }
+  else {
+    if (/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\*\+,;=.]+$/.test(value)) {
+      callback()
+    }
+    else {
+      callback(new Error('非法url'))
+    }
+  }
+}
 const loginRules = ref<FormRules>({
   username: [
     { required: true, trigger: 'blur', message: '请输入用户名' },
@@ -46,22 +59,37 @@ const loginRules = ref<FormRules>({
     { required: true, trigger: 'blur', message: '请输入密码' },
     { min: 6, max: 18, trigger: 'blur', message: '密码长度为6到18位' },
   ],
+  host: [
+    { validator: checkHost, trigger: 'blur' },
+  ],
 })
 function handleLogin() {
   loginFormRef.value && loginFormRef.value.validate((valid) => {
     if (valid) {
       loading.value = true
-      userStore.login(loginForm.value).then(() => {
+      userStore.login(loginForm.value).then((res) => {
         loading.value = false
-        if (loginForm.value.remember) {
-          localStorage.setItem('username', loginForm.value.username)
-          localStorage.setItem('host', loginForm.value.host)
+        if (res.success) {
+          if (loginForm.value.remember) {
+            localStorage.setItem('username', loginForm.value.username)
+            localStorage.setItem('host', loginForm.value.host)
+          }
+          else {
+            localStorage.removeItem('username')
+            localStorage.removeItem('host')
+          }
+          router.push(redirect.value)
+          ElNotification({
+            message: res.message,
+            type: 'success',
+          })
         }
         else {
-          localStorage.removeItem('username')
-          localStorage.removeItem('host')
+          ElMessage({
+            message: res.message,
+            type: 'error',
+          })
         }
-        router.push(redirect.value)
       }).catch(() => {
         loading.value = false
       })

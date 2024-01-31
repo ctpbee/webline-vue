@@ -11,7 +11,7 @@ const useUserStore = defineStore(
     const settingsStore = useSettingsStore()
     const routeStore = useRouteStore()
     const menuStore = useMenuStore()
-
+    const baseURL = ref(localStorage.host ?? '')
     const username = ref(localStorage.username ?? '')
     const token = ref(localStorage.token ?? '')
     const failure_time = ref(localStorage.failure_time ?? '')
@@ -35,12 +35,14 @@ const useUserStore = defineStore(
       host: string
     }) {
       const res = await apiUser.login(data)
-      if (res.data) {
+      if (res.success) {
         localStorage.setItem('username', data.username)
+        localStorage.setItem('host', data.host)
         localStorage.setItem('token', res.data.token)
         // localStorage.setItem('failure_time', res.data.failure_time)
         // localStorage.setItem('avatar', res.data.avatar)
         username.value = data.username
+        baseURL.value = data.host
         token.value = res.data.token
         // failure_time.value = res.data.failure_time
         // avatar.value = res.data.avatar
@@ -49,7 +51,10 @@ const useUserStore = defineStore(
     }
     // 登出
     async function logout(redirect = router.currentRoute.value.fullPath) {
+      await apiUser.logout()
       localStorage.clear()
+      localStorage.setItem('username', username.value)
+      localStorage.setItem('host', baseURL.value)
       username.value = ''
       token.value = ''
       failure_time.value = ''
@@ -81,6 +86,7 @@ const useUserStore = defineStore(
     return {
       username,
       token,
+      baseURL,
       avatar,
       permissions,
       isLogin,
