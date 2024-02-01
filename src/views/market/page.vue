@@ -9,7 +9,7 @@ import { io } from 'socket.io-client'
 
 import useUserStore from '@/store/modules/user'
 
-let socket
+const socket = io(localStorage.host)
 const userStore = useUserStore()
 const tickIndex = {}
 const tableData = ref([])
@@ -35,11 +35,12 @@ function render_table(data) {
 
 onMounted(() => {
   userStore.get_ticks().then((res) => {
-    const table = JSON.parse(res.data)
-    for (const key in table) {
-      render_table(table[key])
+    if (res.data !== undefined) {
+      const table = JSON.parse(res.data)
+      for (const key in table) {
+        render_table(table[key])
+      }
     }
-    socket = io(localStorage.host)
     socket.on('tick', (socket) => {
       const res = JSON.parse(socket)
       render_table(res)
