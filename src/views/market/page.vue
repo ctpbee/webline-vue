@@ -11,23 +11,27 @@ let socket
 const tickIndex = {}
 const tableData = ref([])
 
+function render_table(socket) {
+  const data = JSON.parse(socket)
+  const index = tickIndex[data.symbol]
+  if (index >= 0) {
+    for (const key in data) {
+      if (typeof data[key] === 'number') {
+        data[key] = Math.round(data[key] * 100) / 100
+      }
+    }
+
+    tableData.value[index] = data
+  }
+  else {
+    tickIndex[data.symbol] = tableData.value.push(data) - 1
+  }
+}
+
 onMounted(() => {
   socket = io(localStorage.host)
   socket.on('tick', (socket) => {
-    const data = JSON.parse(socket)
-    const index = tickIndex[data.symbol]
-    if (index >= 0) {
-      for (const key in data) {
-        if (typeof data[key] === 'number') {
-          data[key] = Math.round(data[key] * 100) / 100
-        }
-      }
-
-      tableData.value[index] = data
-    }
-    else {
-      tickIndex[data.symbol] = tableData.value.push(data) - 1
-    }
+    render_table(socket)
   })
 })
 
@@ -42,7 +46,7 @@ const columns = [{ label: '合约', prop: 'local_symbol' }, { label: '最新价'
   <div>
     <PageMain>
       <h2>
-        <el-table :data="tableData" style="width: 100%;">
+        <el-table :data="tableData" style="width: 100%; font-size: 12px;">
           <el-table-column v-for="(item, index) in columns" :key="index" :prop="item.prop" :label="item.label" />
         </el-table>
       </h2>

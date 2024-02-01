@@ -18,7 +18,7 @@ const routes: RouteRecordRaw = {
     name: 'websocketTest',
     component: () => import('@/views/market/page.vue'),
     meta: {
-      title: 'websocket测试',
+      sidebar: false,
     },
   }],
 }
