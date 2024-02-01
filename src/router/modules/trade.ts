@@ -5,21 +5,22 @@ function Layout() {
 }
 
 const routes: RouteRecordRaw = {
-  path: '/market',
+  path: '/trade',
   component: Layout,
-  redirect: '/market/page',
-  name: 'market',
+  redirect: '/trade/page',
+  name: 'trade',
   meta: {
-    title: '行情',
-    icon: 'heroicons-solid:menu-alt-3',
+    title: '交易',
+    icon: 'heroicons-solid:arrow-trending-up',
   },
   children: [{
     path: 'page',
-    name: 'websocketTest',
-    component: () => import('@/views/market/page.vue'),
+    name: 'trade',
+    component: () => import('@/views/trade/page.vue'),
     meta: {
       sidebar: false,
     },
   }],
 }
+
 export default routes

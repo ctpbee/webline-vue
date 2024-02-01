@@ -7,31 +7,43 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { io } from 'socket.io-client'
 
+import useUserStore from '@/store/modules/user'
+
 let socket
+const userStore = useUserStore()
 const tickIndex = {}
 const tableData = ref([])
 
-function render_table(socket) {
-  const data = JSON.parse(socket)
+function process_data(data) {
+  for (const key in data) {
+    if (typeof data[key] === 'number') {
+      data[key] = Math.round(data[key] * 100) / 100
+    }
+  }
+  return data
+}
+
+function render_table(data) {
   const index = tickIndex[data.symbol]
   if (index >= 0) {
-    for (const key in data) {
-      if (typeof data[key] === 'number') {
-        data[key] = Math.round(data[key] * 100) / 100
-      }
-    }
-
-    tableData.value[index] = data
+    tableData.value[index] = process_data(data)
   }
   else {
-    tickIndex[data.symbol] = tableData.value.push(data) - 1
+    tickIndex[data.symbol] = tableData.value.push(process_data(data)) - 1
   }
 }
 
 onMounted(() => {
-  socket = io(localStorage.host)
-  socket.on('tick', (socket) => {
-    render_table(socket)
+  userStore.get_ticks().then((res) => {
+    const table = JSON.parse(res.data)
+    for (const key in table) {
+      render_table(table[key])
+    }
+    socket = io(localStorage.host)
+    socket.on('tick', (socket) => {
+      const res = JSON.parse(socket)
+      render_table(res)
+    })
   })
 })
 

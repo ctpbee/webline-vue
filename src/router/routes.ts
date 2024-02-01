@@ -1,8 +1,8 @@
 import { setupLayouts } from 'virtual:meta-layouts'
 import generatedRoutes from 'virtual:generated-pages'
 import type { RouteRecordRaw } from 'vue-router'
-import MultilevelMenuExample from './modules/multilevel.menu.example'
 import Market from './modules/market'
+import Trade from './modules/trade'
 import type { Route } from '#/global'
 import useSettingsStore from '@/store/modules/settings'
 
@@ -67,6 +67,7 @@ const asyncRoutes: Route.recordMainRaw[] = [
     },
     children: [
       Market,
+      Trade,
     ],
   },
 ]

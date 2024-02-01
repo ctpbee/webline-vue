@@ -28,6 +28,11 @@ const useUserStore = defineStore(
       return retn
     })
 
+    async function get_ticks() {
+      const res = await apiUser.get_ticks()
+      return res
+    }
+
     // 登录
     async function login(data: {
       username: string
@@ -94,6 +99,7 @@ const useUserStore = defineStore(
       logout,
       getPermissions,
       editPassword,
+      get_ticks,
     }
   },
 )

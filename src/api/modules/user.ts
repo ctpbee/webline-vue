@@ -20,4 +20,5 @@ export default {
   }) => api.post('user/password/edit', data, {
     baseURL: '/mock/',
   }),
+  get_ticks: () => api.get('web/ticks'),
 }
