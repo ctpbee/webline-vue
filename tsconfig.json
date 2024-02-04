@@ -27,7 +27,7 @@
       "element-plus/global"
     ],
     "allowImportingTsExtensions": true,
-    "allowJs": false,
+    "allowJs": true,
     "strict": true,
     "noEmit": true,
     "sourceMap": true,

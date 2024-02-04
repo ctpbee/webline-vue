@@ -18,9 +18,12 @@ export default async ({ mode, command }) => {
   })
   return defineConfig({
     base: './',
+    envPrefix: ['VITE_', 'TAURI_PLATFORM', 'TAURI_ARCH', 'TAURI_FAMILY', 'TAURI_PLATFORM_VERSION', 'TAURI_PLATFORM_TYPE', 'TAURI_DEBUG'],
+
     // 开发服务器选项 https://cn.vitejs.dev/config/#server-options
     server: {
       open: false,
+      strictPort: true,
       port: 9000,
       proxy: {
         '/proxy': {
@@ -33,7 +36,12 @@ export default async ({ mode, command }) => {
     // 构建选项 https://cn.vitejs.dev/config/#server-fsserve-root
     build: {
       outDir: mode === 'production' ? 'dist' : `dist-${mode}`,
-      sourcemap: env.VITE_BUILD_SOURCEMAP === 'true',
+      // sourcemap: env.VITE_BUILD_SOURCEMAP === 'true',
+      target: process.env.TAURI_PLATFORM === 'windows' ? 'chrome105' : 'safari13',
+      // don't minify for debug builds
+      minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
+      // produce sourcemaps for debug builds
+      sourcemap: !!process.env.TAURI_DEBUG,
     },
     define: {
       __SYSTEM_INFO__: JSON.stringify({
@@ -45,6 +53,7 @@ export default async ({ mode, command }) => {
         lastBuildTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       }),
     },
+
     plugins: createVitePlugins(env, command === 'build'),
     resolve: {
       alias: {
