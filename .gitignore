@@ -8,3 +8,4 @@ dist-ssr
 src-tauri/target/
 .xwin-cache
 target*
+.idea
