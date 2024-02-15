@@ -20,6 +20,9 @@ dependencies:
   axios:
     specifier: ^1.6.3
     version: 1.6.3
+  ctpbee_webline:
+    specifier: 'link:'
+    version: 'link:'
   dayjs:
     specifier: ^1.11.10
     version: 1.11.10

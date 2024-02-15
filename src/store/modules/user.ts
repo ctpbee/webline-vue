@@ -54,6 +54,7 @@ const useUserStore = defineStore(
       }
       return res
     }
+
     // 登出
     async function logout(redirect = router.currentRoute.value.fullPath) {
       await apiUser.logout()
@@ -74,18 +75,25 @@ const useUserStore = defineStore(
         },
       })
     }
+
     // 获取权限
     async function getPermissions() {
       const res = await apiUser.permission()
       permissions.value = res.data.permissions
       return permissions.value
     }
+
     // 修改密码
     async function editPassword(data: {
       password: string
       newpassword: string
     }) {
       await apiUser.passwordEdit(data)
+    }
+
+    async function account_update() {
+      const res = await apiUser.account_update()
+      return res
     }
 
     return {
@@ -100,6 +108,7 @@ const useUserStore = defineStore(
       getPermissions,
       editPassword,
       get_ticks,
+      account_update,
     }
   },
 )

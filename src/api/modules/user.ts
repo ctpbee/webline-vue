@@ -21,4 +21,5 @@ export default {
     baseURL: '/mock/',
   }),
   get_ticks: () => api.get('web/ticks'),
+  account_update: () => api.get('web/account_update'),
 }
